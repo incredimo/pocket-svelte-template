@@ -1,29 +1,29 @@
 version: '3.5'
 
 services:
-  pb:
+  server:
     image: alpine:latest
-    entrypoint: /app/pb/entrypoint.sh
-    command: "/app/pb/pocketbase serve --dev --http 0.0.0.0:8090 --publicDir ../sk/build"
+    entrypoint: /app/server/entrypoint.sh
+    command: "/app/server/pocketbase serve --dev --http 0.0.0.0:8090 --publicDir ../web/build"
     user: ${UID}:${GID}
     expose:
       - 8090
-    working_dir: /app/pb
+    working_dir: /app/server
     environment:
-      - HOME=/app/pb
+      - HOME=/app/server
       - AUDITLOG=${AUDITLOG}
     volumes:
-      - ${PWD}/pb:/app/pb
-      - ${PWD}/sk:/app/sk
+      - ${PWD}/server:/app/server
+      - ${PWD}/web:/app/web
       - ${HOME}/go/pkg:/go/pkg
-  sk:
+  web:
     image: node:22-alpine
     user: ${UID}:${GID}
     # sveltekit build
     command: sh -c "npx pnpm install && npm run build"
     volumes:
-      - ${PWD}/sk:/app/sk
-      - ${PWD}/pb:/app/pb
+      - ${PWD}/web:/app/web
+      - ${PWD}/server:/app/server
     environment:
-      - HOME=/app/sk
-    working_dir: /app/sk
+      - HOME=/app/web
+    working_dir: /app/web
